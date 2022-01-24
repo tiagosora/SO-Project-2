@@ -153,7 +153,7 @@ static void waitForNextFlight ()
     if (semUp (semgid, sh->mutex) == -1)                                                   /* exit critical region */
     { perror ("error on the down operation for semaphore access (HT)");
         exit (EXIT_FAILURE);
-    }
+    }   
 
     /* insert your code here */
     if (semDown(semgid, sh->readyForBoarding) == -1) {
@@ -212,7 +212,7 @@ static bool checkPassport()
     bool last;
 
     /* insert your code here */
-    if (semUp(semgid, sh->passengersInQueue) == -1) {
+    if (semUp(semgid, sh->passengersWaitInQueue) == -1) {
         perror ("error on the down operation for semaphore access (HT)");
         exit (EXIT_FAILURE);
     }
@@ -250,7 +250,7 @@ static bool checkPassport()
     sh->fSt.nPassInFlight++;
     sh->fSt.totalPassBoarded++;
     saveState(nFic, &sh->fSt);
-    if (nPassengersInFlight() == MAXFC || (nPassengersInFlight() >= MINFC && nPassengersInQueue() == 0) || sh->fSt.totalPassBoarded == N){
+    if (nPassengersInFlight() == MAXFC || (nPassengersInFlight() >= MINFC && nPassengersInQueue() == 0) || sh->fSt.totalPassBoarded == N) {
         last = true;
     }
     else {
@@ -265,10 +265,6 @@ static bool checkPassport()
     }
 
     /* insert your code here */
-    // if (semDown(semgid, sh->passengersInQueue) == -1) {
-    //     perror ("error on the down operation for semaphore access (HT)");
-    //     exit (EXIT_FAILURE);
-    // }
     
 
     return last;
@@ -301,6 +297,11 @@ void  signalReadyToFlight()
     }
 
     /* insert your code here */
+    sh->fSt.nPassengersInFlight[sh->fSt.nFlight-1] = nPassengersInFlight();
+    sh->fSt.st.hostessStat = READY_TO_FLIGHT;
+    saveState(nFic, &sh->fSt);
+    saveFlightDeparted(nFic, &sh->fSt);
+
     if (sh->fSt.totalPassBoarded == N){
         sh->fSt.finished = true;
     }
