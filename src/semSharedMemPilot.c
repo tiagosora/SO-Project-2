@@ -173,7 +173,7 @@ static void signalReadyForBoarding ()
     /* insert your code here */
     sh->fSt.nFlight++;
     saveStartBoarding(nFic, &sh->fSt);
-    sh->fSt.st.pilotStat = WAITING_FOR_BOARDING;
+    sh->fSt.st.pilotStat = READY_FOR_BOARDING;
     saveState(nFic, &sh->fSt);
 
     if (semUp (semgid, sh->mutex) == -1) {                                                      /* exit critical region */
